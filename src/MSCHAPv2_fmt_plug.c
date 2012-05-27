@@ -23,7 +23,7 @@
  * http://freeradius.org/rfc/rfc2759.txt
  *
  */
-
+#include "DES_bs.h"
 #include <string.h>
 #ifdef _OPENMP
 #include <omp.h>
@@ -36,7 +36,9 @@
 #include "memory.h"
 
 #include "sha.h"
-#include <openssl/des.h>
+
+//Initial permutation//
+extern unsigned char DES_IP[64];
 
 #ifndef uchar
 #define uchar unsigned char
@@ -63,7 +65,10 @@
 #ifdef _OPENMP
 #define MAX_KEYS_PER_CRYPT	0x10000
 #else
-#define MAX_KEYS_PER_CRYPT	THREAD_RATIO
+//#define MAX_KEYS_PER_CRYPT	THREAD_RATIO
+
+//set to DES_BS_DEPTH for bitsliced des//
+#define MAX_KEYS_PER_CRYPT      DES_BS_DEPTH
 #endif
 
 static struct fmt_tests tests[] = {
@@ -90,6 +95,8 @@ static uchar (*output)[PARTIAL_BINARY_SIZE];
 static uchar *challenge;
 static int keys_prepared;
 
+static void mschapv2_set_salt(void *salt);
+
 #include "unicode.h"
 
 static void init(struct fmt_main *pFmt)
@@ -110,8 +117,11 @@ static void init(struct fmt_main *pFmt)
 	saved_len = mem_calloc_tiny(sizeof(*saved_len) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_WORD);
 	saved_key = mem_calloc_tiny(sizeof(*saved_key) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_NONE);
 	output = mem_alloc_tiny(sizeof(*output) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_WORD);
-}
 
+	//LM =2 for one DES encryption//
+	DES_bs_init(2, DES_bs_cpt);
+
+}
 static int mschapv2_valid(char *ciphertext, struct fmt_main *pFmt)
 {
   char *pos, *pos2;
@@ -219,29 +229,63 @@ static void *mschapv2_get_binary(char *ciphertext)
   return binary;
 }
 
-static inline void setup_des_key(unsigned char key_56[], DES_key_schedule *ks)
+static inline void setup_des_key(unsigned char key_56[], int index)
 {
-  DES_cblock key;
+  char key[8];
 
-  key[0] = key_56[0];
-  key[1] = (key_56[0] << 7) | (key_56[1] >> 1);
-  key[2] = (key_56[1] << 6) | (key_56[2] >> 2);
-  key[3] = (key_56[2] << 5) | (key_56[3] >> 3);
-  key[4] = (key_56[3] << 4) | (key_56[4] >> 4);
-  key[5] = (key_56[4] << 3) | (key_56[5] >> 5);
-  key[6] = (key_56[5] << 2) | (key_56[6] >> 6);
-  key[7] = (key_56[6] << 1);
+  //left shifted by one to bring key in openssl format//
+  key[0] = (key_56[0])>>1;
+  key[1] = ((key_56[0] << 7) | (key_56[1] >> 1)) >>1;
+  key[2] = ((key_56[1] << 6) | (key_56[2] >> 2)) >>1;
+  key[3] = ((key_56[2] << 5) | (key_56[3] >> 3)) >>1;
+  key[4] = ((key_56[3] << 4) | (key_56[4] >> 4)) >>1;
+  key[5] = ((key_56[4] << 3) | (key_56[5] >> 5)) >>1;
+  key[6] = ((key_56[5] << 2) | (key_56[6] >> 6)) >>1;
+  key[7] = ((key_56[6] << 1)) >>1;
 
-  DES_set_key(&key, ks);
+  DES_bs_set_key((char*)key, index);
+}
+
+//generates output buffer//
+void generate_output(int count)
+{
+	int i, j;
+	char *cipher;
+	char temp;
+
+	unsigned char inv_ip[64] = {
+		39, 7, 47, 15, 55, 23, 63, 31,
+		38, 6, 46, 14, 54, 22, 62, 30,
+		37, 5, 45, 13, 53, 21, 61, 29,
+		36, 4, 44, 12, 52, 20, 60, 28,
+		35, 3, 43, 11, 51, 19, 59, 27,
+		34, 2, 42, 10, 50, 18, 58, 26,
+		33, 1, 41, 9,  49, 17, 57, 25,
+		32, 0, 40, 8,  48, 16, 56, 24,
+	};
+
+	for(i=0; i<count; i++)
+	{
+		cipher = output[i];
+		memset(cipher, 0, 8);
+		for(j=0 ;j<64; j++)
+		{
+			temp = (unsigned char)((DES_bs_all.B[inv_ip[j]] >> i) & 0x01);
+			cipher[j>>3] |= temp << (7 - j%8);
+		}
+
+	}
+
 }
 
 /* Calculate the MSCHAPv2 response for the given challenge, using the
    specified authentication identity (username), password and client
    nonce.
 */
+
 static void mschapv2_crypt_all(int count)
 {
-	DES_key_schedule ks;
+
 	int i;
 
 	if (!keys_prepared) {
@@ -264,13 +308,16 @@ static void mschapv2_crypt_all(int count)
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(i, ks) shared(count, output, challenge, saved_key)
 #endif
-	for(i=0; i<count; i++) {
+	//bitsliced des encryption//
 
-		/* Just do first DES for a partial binary */
-		setup_des_key(saved_key[i], &ks);
-		DES_ecb_encrypt((DES_cblock*)challenge, (DES_cblock*)output[i], &ks, DES_ENCRYPT);
-	}
+	for(i=0; i<count; i++)
+	setup_des_key(saved_key[i], i);
+
+	DES_bs_crypt_one(count);
+	generate_output(count);
+
 }
+
 
 static int mschapv2_cmp_all(void *binary, int count)
 {
@@ -288,8 +335,10 @@ static int mschapv2_cmp_one(void *binary, int index)
 
 static int mschapv2_cmp_exact(char *source, int index)
 {
-	DES_key_schedule ks;
 	uchar binary[24];
+	void *salt;
+	int i;
+	salt = challenge;
 
 	/* NULL-pad 16-byte NTLM hash to 21-bytes (postponed until now) */
 	memset(&saved_key[index][16], 0, 5);
@@ -298,12 +347,27 @@ static int mschapv2_cmp_exact(char *source, int index)
 	   DES-encrypt challenge using each third as a key
 	   Concatenate three 8-byte resulting values to form 24-byte LM response
 	*/
-	setup_des_key(saved_key[index], &ks);
-	DES_ecb_encrypt((DES_cblock*)challenge, (DES_cblock*)binary, &ks, DES_ENCRYPT);
-	setup_des_key(&saved_key[index][7], &ks);
-	DES_ecb_encrypt((DES_cblock*)challenge, (DES_cblock*)&binary[8], &ks, DES_ENCRYPT);
-	setup_des_key(&saved_key[index][14], &ks);
-	DES_ecb_encrypt((DES_cblock*)challenge, (DES_cblock*)&binary[16], &ks, DES_ENCRYPT);
+	//bitsliced des//
+	mschapv2_set_salt(salt);
+	setup_des_key(saved_key[index], 0);
+	DES_bs_crypt_one(0);
+	generate_output(1);
+	for(i=0;i<8;i++)
+		binary[i] = output[0][i];
+
+	mschapv2_set_salt(salt);
+	setup_des_key(&saved_key[index][7], 0);
+	DES_bs_crypt_one(0);
+	generate_output(1);
+	for(i=0;i<8;i++)
+		binary[8 + i] = output[0][i];
+
+	mschapv2_set_salt(salt);
+	setup_des_key(&saved_key[index][14], 0);
+	DES_bs_crypt_one(0);
+	generate_output(1);
+	for(i=0;i<8;i++)
+		binary[16 + i] = output[0][i];
 
 	return !memcmp(binary, mschapv2_get_binary(source), BINARY_SIZE);
 }
@@ -356,7 +420,19 @@ static void *mschapv2_get_salt(char *ciphertext)
 
 static void mschapv2_set_salt(void *salt)
 {
+	int i,j,cnt, temp;
 	challenge = salt;
+
+	//sets plaintext, plaintext is same for all keys due to brute force//
+	for (i = 0; i < 64; i++) {
+			cnt = DES_IP[i ^ 0x20];
+			j = (int)((challenge[cnt >> 3] >> (7 - (cnt & 7))) & 1);
+			if(j==0)
+				Plaintext[i] = 0;
+			else
+				Plaintext[i] = -1;
+		}
+
 }
 
 static void mschapv2_set_key(char *key, int index)

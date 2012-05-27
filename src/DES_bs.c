@@ -97,8 +97,13 @@ void DES_bs_init(int LM, int cpt)
 
 	for_each_t(n) {
 #if DES_BS_EXPAND
-		if (LM)
-			k = DES_bs_all.KS.p;
+	//set k for LM = 2 //
+		if (LM){
+			if(LM == 2)
+				k = DES_bs_all.KSp;
+			else
+				k = DES_bs_all.KS.p;
+			}
 		else
 			k = DES_bs_all.KSp;
 #else
@@ -117,7 +122,8 @@ void DES_bs_init(int LM, int cpt)
 				bit ^= 070;
 				bit -= bit >> 3;
 				bit = 55 - bit;
-				if (LM) bit = DES_LM_KP[bit];
+				//do only for LM = 1//
+				if (LM == 1) bit = DES_LM_KP[bit];
 				*k++ = &DES_bs_all.K[bit] START;
 			}
 		}
@@ -130,7 +136,8 @@ void DES_bs_init(int LM, int cpt)
 			DES_bs_all.pxkeys[index] =
 			    &DES_bs_all.xkeys.c[0][index & 7][index >> 3];
 
-		if (LM) {
+	//for LM=2, no salt and no upper case conversion//
+		if (LM ==1) {
 			for (c = 0; c < 0x100; c++)
 #ifdef BENCH_BUILD
 			if (c >= 'a' && c <= 'z')
@@ -140,7 +147,7 @@ void DES_bs_init(int LM, int cpt)
 #else
 			DES_bs_all.E.u[c] = CP_up[c];
 #endif
-		} else {
+		} else if(LM==0) {
 			for (index = 0; index < 48; index++)
 				DES_bs_all.Ens[index] =
 				    &DES_bs_all.B[DES_E[index]];
