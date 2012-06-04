@@ -36,7 +36,7 @@ DES_bs_combined *DES_bs_all_p = NULL;
 #elif !DES_BS_ASM
 DES_bs_combined CC_CACHE_ALIGN DES_bs_all;
 #endif
-
+DES_bs_vector Plaintext[64];
 static unsigned char DES_LM_KP[56] = {
 	1, 2, 3, 4, 5, 6, 7,
 	10, 11, 12, 13, 14, 15, 0,
@@ -106,6 +106,7 @@ void DES_bs_init(int LM, int cpt)
 			}
 		else
 			k = DES_bs_all.KSp;
+
 #else
 		k = DES_bs_all.KS.p;
 #endif

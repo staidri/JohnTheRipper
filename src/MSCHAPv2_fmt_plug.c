@@ -46,7 +46,7 @@ extern unsigned char DES_IP[64];
 
 #define FORMAT_LABEL         "mschapv2"
 #define FORMAT_NAME          "MSCHAPv2 C/R MD4 DES"
-#define ALGORITHM_NAME       "mschapv2"
+#define ALGORITHM_NAME       "DES_BS_MSCHAPv2"
 #define BENCHMARK_COMMENT    ""
 #define BENCHMARK_LENGTH     0
 #define PLAINTEXT_LENGTH     125 /* lmcons.h - PWLEN (256) ? 127 ? */
@@ -62,14 +62,14 @@ extern unsigned char DES_IP[64];
 // these may be altered in init() if running OMP
 #define MIN_KEYS_PER_CRYPT	1
 #define THREAD_RATIO		256
-#ifdef _OPENMP
-#define MAX_KEYS_PER_CRYPT	0x10000
-#else
+//#ifdef _OPENMP
+//#define MAX_KEYS_PER_CRYPT	0x10000
+//#else
 //#define MAX_KEYS_PER_CRYPT	THREAD_RATIO
 
 //set to DES_BS_DEPTH for bitsliced des//
 #define MAX_KEYS_PER_CRYPT      DES_BS_DEPTH
-#endif
+//#endif
 
 static struct fmt_tests tests[] = {
   {"$MSCHAPv2$4c092fd3fd98236502e8591100046326$b912ce522524d33123a982cf330a57f8e953fa7974042b5d$6a4915d0ce61d42be533640a75391925$1111", "2222"},
@@ -94,7 +94,6 @@ static uchar (*saved_key)[21];
 static uchar (*output)[PARTIAL_BINARY_SIZE];
 static uchar *challenge;
 static int keys_prepared;
-
 static void mschapv2_set_salt(void *salt);
 
 #include "unicode.h"
@@ -247,32 +246,17 @@ static inline void setup_des_key(unsigned char key_56[], int index)
 }
 
 //generates output buffer//
+
 void generate_output(int count)
 {
-	int i, j;
-	char *cipher;
-	char temp;
-
-	unsigned char inv_ip[64] = {
-		39, 7, 47, 15, 55, 23, 63, 31,
-		38, 6, 46, 14, 54, 22, 62, 30,
-		37, 5, 45, 13, 53, 21, 61, 29,
-		36, 4, 44, 12, 52, 20, 60, 28,
-		35, 3, 43, 11, 51, 19, 59, 27,
-		34, 2, 42, 10, 50, 18, 58, 26,
-		33, 1, 41, 9,  49, 17, 57, 25,
-		32, 0, 40, 8,  48, 16, 56, 24,
-	};
+	int i;
+	unsigned char *cipher;
 
 	for(i=0; i<count; i++)
 	{
 		cipher = output[i];
 		memset(cipher, 0, 8);
-		for(j=0 ;j<64; j++)
-		{
-			temp = (unsigned char)((DES_bs_all.B[inv_ip[j]] >> i) & 0x01);
-			cipher[j>>3] |= temp << (7 - j%8);
-		}
+		DES_bs_generate_output(cipher, i);
 
 	}
 
@@ -306,7 +290,7 @@ static void mschapv2_crypt_all(int count)
 	}
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(i, ks) shared(count, output, challenge, saved_key)
+#pragma omp parallel for default(none) private(i) shared(count, saved_key)
 #endif
 	//bitsliced des encryption//
 
@@ -350,21 +334,21 @@ static int mschapv2_cmp_exact(char *source, int index)
 	//bitsliced des//
 	mschapv2_set_salt(salt);
 	setup_des_key(saved_key[index], 0);
-	DES_bs_crypt_one(0);
+	DES_bs_crypt_one(1);
 	generate_output(1);
 	for(i=0;i<8;i++)
 		binary[i] = output[0][i];
 
 	mschapv2_set_salt(salt);
 	setup_des_key(&saved_key[index][7], 0);
-	DES_bs_crypt_one(0);
+	DES_bs_crypt_one(1);
 	generate_output(1);
 	for(i=0;i<8;i++)
 		binary[8 + i] = output[0][i];
 
 	mschapv2_set_salt(salt);
 	setup_des_key(&saved_key[index][14], 0);
-	DES_bs_crypt_one(0);
+	DES_bs_crypt_one(1);
 	generate_output(1);
 	for(i=0;i<8;i++)
 		binary[16 + i] = output[0][i];
@@ -420,7 +404,7 @@ static void *mschapv2_get_salt(char *ciphertext)
 
 static void mschapv2_set_salt(void *salt)
 {
-	int i,j,cnt, temp;
+	int i,j,cnt;
 	challenge = salt;
 
 	//sets plaintext, plaintext is same for all keys due to brute force//
