@@ -232,15 +232,17 @@ static inline void setup_des_key(unsigned char key_56[], int index)
 {
   char key[8];
 
-  //left shifted by one to bring key in openssl format//
-  key[0] = (key_56[0])>>1;
-  key[1] = ((key_56[0] << 7) | (key_56[1] >> 1)) >>1;
-  key[2] = ((key_56[1] << 6) | (key_56[2] >> 2)) >>1;
-  key[3] = ((key_56[2] << 5) | (key_56[3] >> 3)) >>1;
-  key[4] = ((key_56[3] << 4) | (key_56[4] >> 4)) >>1;
-  key[5] = ((key_56[4] << 3) | (key_56[5] >> 5)) >>1;
-  key[6] = ((key_56[5] << 2) | (key_56[6] >> 6)) >>1;
-  key[7] = ((key_56[6] << 1)) >>1;
+   //right shifted by 1 to bring key in openssl format//
+   //Each byte of key xored with 0x80 to pass check for 0 in DES_bs_set_key()
+
+   key[0] = (key_56[0] >> 1) | 0x80;
+   key[1] = (((key_56[0] << 7) | (key_56[1] >> 1)) >>1) | 0x80;
+   key[2] = (((key_56[1] << 6) | (key_56[2] >> 2)) >>1) | 0x80;
+   key[3] = (((key_56[2] << 5) | (key_56[3] >> 3)) >>1) | 0x80;
+   key[4] = (((key_56[3] << 4) | (key_56[4] >> 4)) >>1) | 0x80;
+   key[5] = (((key_56[4] << 3) | (key_56[5] >> 5)) >>1) | 0x80;
+   key[6] = (((key_56[5] << 2) | (key_56[6] >> 6)) >>1) | 0x80;
+   key[7] = ((key_56[6] << 1) >>1 ) | 0x80;
 
   DES_bs_set_key((char*)key, index);
 }
