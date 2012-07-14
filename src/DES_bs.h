@@ -184,7 +184,5 @@ extern int DES_bs_cmp_all(ARCH_WORD *binary, int count);
  */
 extern int DES_bs_cmp_one(ARCH_WORD *binary, int count, int index);
 
-extern void DES_bs_crypt_one(int keys_count);
-
-extern void DES_bs_generate_output(unsigned char* cipher, int index);
+extern void DES_bs_crypt_plain(int keys_count);
 #endif

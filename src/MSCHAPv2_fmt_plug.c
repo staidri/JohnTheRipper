@@ -7,6 +7,11 @@
  * Modified for performance, OMP and utf-8 support
  * by magnum 2010-2011, no rights reserved
  *
+ * Modified for using Bitsliced DES by Deepika Dutta Mishra
+ * <dipikadutta at gmail.com> in 2012, no rights reserved.
+ * This version does not support OpenMP.
+ *
+ *
  * This algorithm is designed for performing brute-force cracking of the
  * MSCHAPv2 challenge/response sets exchanged during network-based
  * authentication attempts. The captured challenge/response set from these
@@ -23,12 +28,14 @@
  * http://freeradius.org/rfc/rfc2759.txt
  *
  */
+#include "arch.h"
+#include "DES_std.h"
 #include "DES_bs.h"
 #include <string.h>
-#ifdef _OPENMP
+/*#ifdef _OPENMP
 #include <omp.h>
 #endif
-
+*/
 #include "misc.h"
 #include "common.h"
 #include "formats.h"
@@ -36,9 +43,6 @@
 #include "memory.h"
 
 #include "sha.h"
-
-//Initial permutation//
-extern unsigned char DES_IP[64];
 
 #ifndef uchar
 #define uchar unsigned char
@@ -61,15 +65,16 @@ extern unsigned char DES_IP[64];
 
 // these may be altered in init() if running OMP
 #define MIN_KEYS_PER_CRYPT	1
-#define THREAD_RATIO		256
-//#ifdef _OPENMP
-//#define MAX_KEYS_PER_CRYPT	0x10000
-//#else
-//#define MAX_KEYS_PER_CRYPT	THREAD_RATIO
+/*#define THREAD_RATIO		256
+#ifdef _OPENMP
+#define MAX_KEYS_PER_CRYPT	0x10000
+#else
+#define MAX_KEYS_PER_CRYPT	THREAD_RATIO
+#endif
+*/
 
-//set to DES_BS_DEPTH for bitsliced des//
+/* set to DES_BS_DEPTH for bitsliced des */
 #define MAX_KEYS_PER_CRYPT      DES_BS_DEPTH
-//#endif
 
 static struct fmt_tests tests[] = {
   {"$MSCHAPv2$4c092fd3fd98236502e8591100046326$b912ce522524d33123a982cf330a57f8e953fa7974042b5d$6a4915d0ce61d42be533640a75391925$1111", "2222"},
@@ -100,7 +105,7 @@ static void mschapv2_set_salt(void *salt);
 
 static void init(struct fmt_main *pFmt)
 {
-#ifdef _OPENMP
+/*#ifdef _OPENMP
 	int n = MIN_KEYS_PER_CRYPT * omp_get_max_threads();
 	if (n < MIN_KEYS_PER_CRYPT)
 		n = MIN_KEYS_PER_CRYPT;
@@ -111,13 +116,13 @@ static void init(struct fmt_main *pFmt)
 	if (n > MAX_KEYS_PER_CRYPT)
 		n = MAX_KEYS_PER_CRYPT;
 	pFmt->params.max_keys_per_crypt = n;
-#endif
+#endif*/
 	saved_plain = mem_calloc_tiny(sizeof(*saved_plain) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_NONE);
 	saved_len = mem_calloc_tiny(sizeof(*saved_len) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_WORD);
 	saved_key = mem_calloc_tiny(sizeof(*saved_key) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_NONE);
 	output = mem_alloc_tiny(sizeof(*output) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_WORD);
 
-	//LM =2 for one DES encryption//
+	/* LM =2 for DES encryption with no salt and no iterations */
 	DES_bs_init(2, DES_bs_cpt);
 
 }
@@ -211,13 +216,50 @@ static char *mschapv2_split(char *ciphertext, int index)
   return out;
 }
 
+static void *generate_des_format(uchar* binary)
+{
+  static ARCH_WORD block[6];
+  int chr, src,dst,i;
+  uchar value, mask;
+  ARCH_WORD *ptr;
+
+  memset(block, 0, sizeof(ARCH_WORD) * 6);
+
+  for (chr = 0; chr < 24; chr=chr + 8)
+  {
+	dst = 0;
+	for(i=0; i<8; i++)
+	{
+		value = binary[chr + i];
+		mask = 0x80;
+
+		for (src = 0; src < 8; src++) {
+			if (value & mask)
+				block[(chr/4) + (dst>>5)]|= 1 << (dst & 0x1F);
+			mask >>= 1;
+			dst++;
+		}
+	}
+  }
+
+  /* Apply initial permutation on ciphertext blocks */
+  for(i=0; i<6; i=i+2)
+  {
+	  ptr = (ARCH_WORD *)DES_do_IP(&block[i]);
+	  block[i] = ptr[1];
+	  block[i+1] = ptr[0];
+  }
+
+  return block;
+}
+
 static void *mschapv2_get_binary(char *ciphertext)
 {
-  static uchar *binary;
+  uchar *binary;
   int i;
+  ARCH_WORD *ptr;
 
-  if (!binary) binary = mem_alloc_tiny(BINARY_SIZE, MEM_ALIGN_WORD);
-
+  binary = mem_alloc_tiny(BINARY_SIZE, MEM_ALIGN_WORD);
   ciphertext += 10 + 16*2 + 1; /* Skip - $MSCHAPv2$, Authenticator Challenge */
 
   for (i=0; i<BINARY_SIZE; i++)
@@ -225,15 +267,19 @@ static void *mschapv2_get_binary(char *ciphertext)
     binary[i] = (atoi16[ARCH_INDEX(ciphertext[i*2])])<<4;
     binary[i] |= (atoi16[ARCH_INDEX(ciphertext[i*2+1])]);
   }
-  return binary;
+
+  /* Set binary in DES format */
+  ptr = generate_des_format(binary);
+  return ptr;
 }
+
 
 static inline void setup_des_key(unsigned char key_56[], int index)
 {
   char key[8];
 
-   //right shifted by 1 to bring key in openssl format//
-   //Each byte of key xored with 0x80 to pass check for 0 in DES_bs_set_key()
+   /* Right shift key bytes by 1 to bring in openssl format */
+   /* Each byte of key is xored with 0x80 to pass check for 0 in DES_bs_set_key() */
 
    key[0] = (key_56[0] >> 1) | 0x80;
    key[1] = (((key_56[0] << 7) | (key_56[1] >> 1)) >>1) | 0x80;
@@ -247,22 +293,6 @@ static inline void setup_des_key(unsigned char key_56[], int index)
   DES_bs_set_key((char*)key, index);
 }
 
-//generates output buffer//
-
-void generate_output(int count)
-{
-	int i;
-	unsigned char *cipher;
-
-	for(i=0; i<count; i++)
-	{
-		cipher = output[i];
-		memset(cipher, 0, 8);
-		DES_bs_generate_output(cipher, i);
-
-	}
-
-}
 
 /* Calculate the MSCHAPv2 response for the given challenge, using the
    specified authentication identity (username), password and client
@@ -275,9 +305,9 @@ static void mschapv2_crypt_all(int count)
 	int i;
 
 	if (!keys_prepared) {
-#ifdef _OPENMP
+/*#ifdef _OPENMP
 #pragma omp parallel for
-#endif
+#endif*/
 		for(i=0; i<count; i++) {
 			int len;
 			/* Generate 16-byte NTLM hash */
@@ -288,74 +318,68 @@ static void mschapv2_crypt_all(int count)
 
 			/* NULL-padding the 16-byte hash to 21-bytes is made in cmp_exact if needed */
 		}
+
+		for(i=0; i<count; i++)
+			setup_des_key(saved_key[i], i);
+
 		keys_prepared = 1;
 	}
 
-#ifdef _OPENMP
+/*#ifdef _OPENMP
 #pragma omp parallel for default(none) private(i) shared(count, saved_key)
-#endif
-	//bitsliced des encryption//
-
-	for(i=0; i<count; i++)
-	setup_des_key(saved_key[i], i);
-
-	DES_bs_crypt_one(count);
-	generate_output(count);
+#endif*/
+	/* Bitsliced des encryption */
+	DES_bs_crypt_plain(count);
 
 }
 
 
 static int mschapv2_cmp_all(void *binary, int count)
 {
-	int index = 0;
-	for(; index<count; index++)
-		if (!memcmp(output[index], binary, PARTIAL_BINARY_SIZE))
-			return 1;
-	return 0;
+	return DES_bs_cmp_all((ARCH_WORD *)binary, count);
 }
 
 static int mschapv2_cmp_one(void *binary, int index)
 {
-	return (!memcmp(output[index], binary, PARTIAL_BINARY_SIZE));
+	return DES_bs_cmp_one((ARCH_WORD *)binary, 32, index);
 }
 
 static int mschapv2_cmp_exact(char *source, int index)
 {
-	uchar binary[24];
-	void *salt;
-	int i;
-	salt = challenge;
+
+	ARCH_WORD *binary;
 
 	/* NULL-pad 16-byte NTLM hash to 21-bytes (postponed until now) */
 	memset(&saved_key[index][16], 0, 5);
 
-	/* Split resultant value into three 7-byte thirds
-	   DES-encrypt challenge using each third as a key
-	   Concatenate three 8-byte resulting values to form 24-byte LM response
-	*/
-	//bitsliced des//
-	mschapv2_set_salt(salt);
-	setup_des_key(saved_key[index], 0);
-	DES_bs_crypt_one(1);
-	generate_output(1);
-	for(i=0;i<8;i++)
-		binary[i] = output[0][i];
+	binary = mschapv2_get_binary(source);
+	if (!DES_bs_cmp_one(binary, 64, index))
+	{
+		setup_des_key(saved_key[0], 0);
+		return 0;
+	}
 
-	mschapv2_set_salt(salt);
 	setup_des_key(&saved_key[index][7], 0);
-	DES_bs_crypt_one(1);
-	generate_output(1);
-	for(i=0;i<8;i++)
-		binary[8 + i] = output[0][i];
+	DES_bs_crypt_plain(1);
+	binary = mschapv2_get_binary(source);
+	if (!DES_bs_cmp_one(&binary[2], 64, 0))
+	{
+		setup_des_key(saved_key[0], 0);
+		return 0;
+	}
 
-	mschapv2_set_salt(salt);
+
 	setup_des_key(&saved_key[index][14], 0);
-	DES_bs_crypt_one(1);
-	generate_output(1);
-	for(i=0;i<8;i++)
-		binary[16 + i] = output[0][i];
+	DES_bs_crypt_plain(1);
+	binary = mschapv2_get_binary(source);
+	if (!DES_bs_cmp_one(&binary[4], 64, 0))
+	{
+		setup_des_key(saved_key[0], 0);
+		return 0;
+	}
 
-	return !memcmp(binary, mschapv2_get_binary(source), BINARY_SIZE);
+	setup_des_key(saved_key[0], 0);
+	return 1;
 }
 
 /* We're essentially using three salts, but we're going to generate a single value here for later use.
@@ -366,11 +390,15 @@ static void *mschapv2_get_salt(char *ciphertext)
   static unsigned char binary_salt[SALT_SIZE];
   static SHA_CTX ctx;
   unsigned char tmp[16];
-  int i;
+  int i, cnt;
+  uchar j;
   char *pos = NULL;
   unsigned char digest[20];
+  unsigned char temp[SALT_SIZE];
 
   memset(binary_salt, 0, SALT_SIZE);
+  memset(temp, 0, SALT_SIZE);
+
   memset(digest, 0, 20);
   SHA1_Init(&ctx);
 
@@ -401,18 +429,26 @@ static void *mschapv2_get_salt(char *ciphertext)
   SHA1_Final(digest, &ctx);
   memcpy(binary_salt, digest, SALT_SIZE);
 
+  /* Apply IP to salt */
+  for (i = 0; i < 64; i++) {
+		cnt = DES_IP[i ^ 0x20];
+		j = (uchar)((binary_salt[cnt >> 3] >> (7 - (cnt & 7))) & 1);
+		temp[i/8] |= j << (7 - (i % 8));
+  }
+
+  memcpy(binary_salt, temp, SALT_SIZE);
   return (void*)binary_salt;
 }
 
 static void mschapv2_set_salt(void *salt)
 {
-	int i,j,cnt;
+	int i;
+	unsigned char j;
 	challenge = salt;
 
-	//sets plaintext, plaintext is same for all keys due to brute force//
+	/* Set same plaintext for all bit layers */
 	for (i = 0; i < 64; i++) {
-			cnt = DES_IP[i ^ 0x20];
-			j = (int)((challenge[cnt >> 3] >> (7 - (cnt & 7))) & 1);
+			j = (unsigned char) (challenge[i/8] >> (7-(i%8))) & 0x01;
 			if(j==0)
 				Plaintext[i] = 0;
 			else
@@ -440,52 +476,52 @@ static int salt_hash(void *salt)
 
 static int binary_hash_0(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xF;
+	return *(ARCH_WORD *)binary & 0xF;
 }
 
 static int binary_hash_1(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFF;
+	return *(ARCH_WORD *)binary & 0xFF;
 }
 
 static int binary_hash_2(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFFF;
+	return *(ARCH_WORD *)binary & 0xFFF;
 }
 
 static int binary_hash_3(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFFFF;
+	return *(ARCH_WORD *)binary & 0xFFFF;
 }
 
 static int binary_hash_4(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFFFFF;
+	return *(ARCH_WORD *)binary & 0xFFFFF;
 }
 
 static int get_hash_0(int index)
 {
-	return *(ARCH_WORD_32 *)output[index] & 0xF;
+	return DES_bs_get_hash_0(index);
 }
 
 static int get_hash_1(int index)
 {
-	return *(ARCH_WORD_32 *)output[index] & 0xFF;
+	return DES_bs_get_hash_1(index);
 }
 
 static int get_hash_2(int index)
 {
-	return *(ARCH_WORD_32 *)output[index] & 0xFFF;
+	return DES_bs_get_hash_2(index);
 }
 
 static int get_hash_3(int index)
 {
-	return *(ARCH_WORD_32 *)output[index] & 0xFFFF;
+	return DES_bs_get_hash_3(index);
 }
 
 static int get_hash_4(int index)
 {
-	return *(ARCH_WORD_32 *)output[index] & 0xFFFFF;
+	return DES_bs_get_hash_4(index);
 }
 
 struct fmt_main fmt_MSCHAPv2 = {
