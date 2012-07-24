@@ -9,8 +9,7 @@
  *
  * Modified for using Bitsliced DES by Deepika Dutta Mishra
  * <dipikadutta at gmail.com> in 2012, no rights reserved.
- * This version does not support OpenMP.
- *
+ * Supports Openmp.
  *
  * This algorithm is designed for performing brute-force cracking of the
  * MSCHAPv2 challenge/response sets exchanged during network-based
@@ -32,10 +31,10 @@
 #include "DES_std.h"
 #include "DES_bs.h"
 #include <string.h>
-/*#ifdef _OPENMP
+#ifdef _OPENMP
 #include <omp.h>
 #endif
-*/
+
 #include "misc.h"
 #include "common.h"
 #include "formats.h"
@@ -64,16 +63,7 @@
 #define TOTAL_LENGTH         13 + USERNAME_LENGTH + CHALLENGE_LENGTH + CIPHERTEXT_LENGTH
 
 // these may be altered in init() if running OMP
-#define MIN_KEYS_PER_CRYPT	1
-/*#define THREAD_RATIO		256
-#ifdef _OPENMP
-#define MAX_KEYS_PER_CRYPT	0x10000
-#else
-#define MAX_KEYS_PER_CRYPT	THREAD_RATIO
-#endif
-*/
-
-/* set to DES_BS_DEPTH for bitsliced des */
+#define MIN_KEYS_PER_CRYPT	DES_BS_DEPTH
 #define MAX_KEYS_PER_CRYPT      DES_BS_DEPTH
 
 static struct fmt_tests tests[] = {
@@ -96,7 +86,6 @@ static struct fmt_tests tests[] = {
 static uchar (*saved_plain)[PLAINTEXT_LENGTH + 1];
 static int (*saved_len);
 static uchar (*saved_key)[21];
-static uchar (*output)[PARTIAL_BINARY_SIZE];
 static uchar *challenge;
 static int keys_prepared;
 static void mschapv2_set_salt(void *salt);
@@ -105,27 +94,19 @@ static void mschapv2_set_salt(void *salt);
 
 static void init(struct fmt_main *pFmt)
 {
-/*#ifdef _OPENMP
-	int n = MIN_KEYS_PER_CRYPT * omp_get_max_threads();
-	if (n < MIN_KEYS_PER_CRYPT)
-		n = MIN_KEYS_PER_CRYPT;
-	if (n > MAX_KEYS_PER_CRYPT)
-		n = MAX_KEYS_PER_CRYPT;
-	pFmt->params.min_keys_per_crypt = n;
-	n = n * (n << 1) * THREAD_RATIO;
-	if (n > MAX_KEYS_PER_CRYPT)
-		n = MAX_KEYS_PER_CRYPT;
-	pFmt->params.max_keys_per_crypt = n;
-#endif*/
-	saved_plain = mem_calloc_tiny(sizeof(*saved_plain) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_NONE);
-	saved_len = mem_calloc_tiny(sizeof(*saved_len) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_WORD);
-	saved_key = mem_calloc_tiny(sizeof(*saved_key) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_NONE);
-	output = mem_alloc_tiny(sizeof(*output) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_WORD);
 
 	/* LM =2 for DES encryption with no salt and no iterations */
 	DES_bs_init(2, DES_bs_cpt);
+	#if DES_bs_mt
+		pFmt->params.min_keys_per_crypt = DES_bs_min_kpc;
+		pFmt->params.max_keys_per_crypt = DES_bs_max_kpc;
+	#endif
 
+	saved_plain = mem_calloc_tiny(sizeof(*saved_plain) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_NONE);
+	saved_len = mem_calloc_tiny(sizeof(*saved_len) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_WORD);
+	saved_key = mem_calloc_tiny(sizeof(*saved_key) * pFmt->params.max_keys_per_crypt, MEM_ALIGN_NONE);
 }
+
 static int mschapv2_valid(char *ciphertext, struct fmt_main *pFmt)
 {
   char *pos, *pos2;
@@ -305,9 +286,9 @@ static void mschapv2_crypt_all(int count)
 	int i;
 
 	if (!keys_prepared) {
-/*#ifdef _OPENMP
+#ifdef _OPENMP
 #pragma omp parallel for
-#endif*/
+#endif
 		for(i=0; i<count; i++) {
 			int len;
 			/* Generate 16-byte NTLM hash */
@@ -318,16 +299,15 @@ static void mschapv2_crypt_all(int count)
 
 			/* NULL-padding the 16-byte hash to 21-bytes is made in cmp_exact if needed */
 		}
-
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
 		for(i=0; i<count; i++)
 			setup_des_key(saved_key[i], i);
 
 		keys_prepared = 1;
 	}
 
-/*#ifdef _OPENMP
-#pragma omp parallel for default(none) private(i) shared(count, saved_key)
-#endif*/
 	/* Bitsliced des encryption */
 	DES_bs_crypt_plain(count);
 
