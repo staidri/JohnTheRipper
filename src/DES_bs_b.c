@@ -11,6 +11,8 @@
 #include "common.h"
 #include "DES_bs.h"
 
+DES_bs_vector P[64];
+
 #if DES_BS_ASM && defined(_OPENMP) && defined(__GNUC__)
 #warning Assembly code and OpenMP are both requested - will provide the former, but not the latter (for DES-based hashes).  This may likely be corrected by enabling SIMD intrinsics with the C compiler (try adding -msse2 to OMPFLAGS).
 #endif
@@ -1557,7 +1559,7 @@ void DES_bs_crypt_LM(int keys_count)
 		} while (--rounds);
 	}
 }
-#endif
+
 
 #if DES_bs_mt
 static MAYBE_INLINE void DES_bs_finalize_keys_plain(int t)
@@ -1603,6 +1605,12 @@ static MAYBE_INLINE void DES_bs_finalize_keys_plain(void)
 #define kd				[0]
 #endif
 
+#if DES_BS_VECTOR
+#define INDX [index]
+#else
+#define INDX
+#endif
+
 void DES_bs_crypt_plain(int keys_count)
 {
 #if DES_bs_mt
@@ -1611,7 +1619,7 @@ void DES_bs_crypt_plain(int keys_count)
 
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(t) shared(n, DES_bs_all_p, keys_count,Plaintext)
+#pragma omp parallel for default(none) private(t) shared(n, DES_bs_all_p, keys_count,P)
 #endif
 	for_each_t(n) {
 			ARCH_WORD **k;
@@ -1620,8 +1628,17 @@ void DES_bs_crypt_plain(int keys_count)
 			int depth;
 	#endif
 			int i;
-			for(i=0; i<64; i++)
-					DES_bs_all.B[i] = Plaintext[i];
+	#if DES_BS_VECTOR
+		int index;
+	#endif
+
+	for(i=0; i<64; i++)
+	{
+	#if DES_BS_VECTOR
+                for(index=0; index<DES_BS_VECTOR_SIZE; index++)
+	#endif
+			DES_bs_all.B[i]INDX = P[i]INDX;
+	}
 
 #if DES_bs_mt
 		DES_bs_finalize_keys_plain(t);
@@ -1702,3 +1719,33 @@ void DES_bs_crypt_plain(int keys_count)
 		k += 96;
 	} while (--rounds);
 }}
+#endif
+
+#ifdef INDX
+#undef INDX
+#endif
+
+#if DES_BS_VECTOR
+#define INDX [k]
+#else
+#define INDX
+#endif
+
+void DES_bs_generate_plaintext(unsigned char *plaintext)
+{
+	int i, j;
+#if DES_BS_VECTOR
+	int k;
+#endif
+
+	/* Set same plaintext for all bit layers */
+	for (i = 0; i < 64; i++) {
+		j = (int) (plaintext[i/8] >> (7-(i%8))) & 0x01;
+		if(j==1)
+				j = -1;
+#if DES_BS_VECTOR
+		for(k=0; k<DES_BS_VECTOR_SIZE; k++)
+#endif
+			P[i]INDX = j;
+		}
+}

@@ -72,7 +72,7 @@ typedef struct {
 } DES_bs_combined;
 
 //store plaintext//
-extern DES_bs_vector Plaintext[64];
+extern DES_bs_vector P[64];
 
 
 #if defined(_OPENMP) && !DES_BS_ASM
@@ -185,4 +185,5 @@ extern int DES_bs_cmp_all(ARCH_WORD *binary, int count);
 extern int DES_bs_cmp_one(ARCH_WORD *binary, int count, int index);
 
 extern void DES_bs_crypt_plain(int keys_count);
+extern void DES_bs_generate_plaintext(unsigned char *plaintext);
 #endif

@@ -49,7 +49,12 @@
 
 #define FORMAT_LABEL         "mschapv2"
 #define FORMAT_NAME          "MSCHAPv2 C/R MD4 DES"
+#if DES_BS_VECTOR
+#define ALGORITHM_NAME       "DES_BS_MSCHAPv2-SSE2"
+#else
 #define ALGORITHM_NAME       "DES_BS_MSCHAPv2"
+#endif
+
 #define BENCHMARK_COMMENT    ""
 #define BENCHMARK_LENGTH     0
 #define PLAINTEXT_LENGTH     125 /* lmcons.h - PWLEN (256) ? 127 ? */
@@ -422,18 +427,8 @@ static void *mschapv2_get_salt(char *ciphertext)
 
 static void mschapv2_set_salt(void *salt)
 {
-	int i;
-	unsigned char j;
 	challenge = salt;
-
-	/* Set same plaintext for all bit layers */
-	for (i = 0; i < 64; i++) {
-			j = (unsigned char) (challenge[i/8] >> (7-(i%8))) & 0x01;
-			if(j==0)
-				Plaintext[i] = 0;
-			else
-				Plaintext[i] = -1;
-		}
+	DES_bs_generate_plaintext(challenge);
 
 }
 

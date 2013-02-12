@@ -2,8 +2,8 @@
  * This file is part of John the Ripper password cracker,
  * Copyright (c) 1996-2002,2005,2010,2011 by Solar Designer
  *
- * Modified for adding support for single DES encryption with
- * no salt by Deepika Dutta Mishra <dipikadutta at gmail.com> in
+ * Addition of single DES encryption with no salt by
+ * Deepika Dutta Mishra <dipikadutta at gmail.com> in
  * 2012, no rights reserved.
  *
  */
@@ -40,8 +40,9 @@ int DES_bs_nt = 0;
 DES_bs_combined *DES_bs_all_p = NULL;
 #elif !DES_BS_ASM
 DES_bs_combined CC_CACHE_ALIGN DES_bs_all;
+DES_bs_vector P[64];
 #endif
-DES_bs_vector Plaintext[64];
+
 static unsigned char DES_LM_KP[56] = {
 	1, 2, 3, 4, 5, 6, 7,
 	10, 11, 12, 13, 14, 15, 0,
