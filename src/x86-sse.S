@@ -80,9 +80,10 @@
 .bss
 #endif
 
+.globl P
 DO_ALIGN(6)
-.global P
-DO_SPACE(nptr(64))
+P:
+DO_SPACE(nvec(64))
 
 .globl DES_bs_all
 DO_ALIGN(6)
@@ -114,7 +115,7 @@ DO_SPACE(nptr(48))
 #define E(i)				DES_bs_all_E+nptr(i)
 #define B(i)				DES_bs_all_B+nvec(i)
 #define tmp_at(i)			DES_bs_all_tmp+nvec(i)
-
+#define P(i)				P+nvec(i)
 #define pnot				tmp_at(0)
 
 #define S1(out1, out2, out3, out4, extra) \
@@ -1399,47 +1400,152 @@ DES_bs_crypt_LM_loop:
 	popl %esi
 	ret
 
-DO_ALIGN(6)
-copy:
-        pushl   %ebp
-        movl    %esp, %ebp
-        subl    $16, %esp
-        movl    $P, -8(%ebp)
-        movl    $B, -4(%ebp)
-        movl    $0, -12(%ebp)
-        jmp     .L2
-.L3:
-        movl    -12(%ebp), %eax
-        sall    $4, %eax
-        addl    -4(%ebp), %eax
-        movl    -12(%ebp), %edx
-        sall    $4, %edx
-        addl    -8(%ebp), %edx
-        movaps  (%edx), %xmm0
-        movaps  %xmm0, (%eax)
-        addl    $1, -12(%ebp)
-.L2:
-        cmpl    $63, -12(%ebp)
-        jle     .L3
-        leave
-        ret
-
+#define rounds				%eax
 
 DO_ALIGN(6)
 .globl DES_bs_crypt_plain
 DES_bs_crypt_plain:
-	copy
 	movl $DES_bs_all_xkeys,v_ptr
 	movl $DES_bs_all_K,k_ptr
+	movdqa P(0),%xmm4
+	movdqa %xmm4,B(0)
+	movdqa P(1),%xmm4
+	movdqa %xmm4,B(1)
+	movdqa P(2),%xmm4
+	movdqa %xmm4,B(2)
+	movdqa P(3),%xmm4
+	movdqa %xmm4,B(3)
+	movdqa P(4),%xmm4
+	movdqa %xmm4,B(4)
+	movdqa P(5),%xmm4
+	movdqa %xmm4,B(5)
+	movdqa P(6),%xmm4
+	movdqa %xmm4,B(6)
+	movdqa P(7),%xmm4
+	movdqa %xmm4,B(7)
+	movdqa P(8),%xmm4
+	movdqa %xmm4,B(8)
+	movdqa P(9),%xmm4
+	movdqa %xmm4,B(9)
+	movdqa P(10),%xmm4
+	movdqa %xmm4,B(10)
+	movdqa P(11),%xmm4
+	movdqa %xmm4,B(11)
+	movdqa P(12),%xmm4
+	movdqa %xmm4,B(12)
+	movdqa P(13),%xmm4
+	movdqa %xmm4,B(13)
+	movdqa P(14),%xmm4
+	movdqa %xmm4,B(14)
+	movdqa P(15),%xmm4
+	movdqa %xmm4,B(15)
+	movdqa P(16),%xmm4
+	movdqa %xmm4,B(16)
+	movdqa P(17),%xmm4
+	movdqa %xmm4,B(17)
+	movdqa P(18),%xmm4
+	movdqa %xmm4,B(18)
+	movdqa P(19),%xmm4
+	movdqa %xmm4,B(19)
+	movdqa P(20),%xmm4
+	movdqa %xmm4,B(20)
+	movdqa P(21),%xmm4
+	movdqa %xmm4,B(21)
+	movdqa P(22),%xmm4
+	movdqa %xmm4,B(22)
+	movdqa P(23),%xmm4
+	movdqa %xmm4,B(23)
+	movdqa P(24),%xmm4
+	movdqa %xmm4,B(24)
+	movdqa P(25),%xmm4
+	movdqa %xmm4,B(25)
+	movdqa P(26),%xmm4
+	movdqa %xmm4,B(26)
+	movdqa P(27),%xmm4
+	movdqa %xmm4,B(27)
+	movdqa P(28),%xmm4
+	movdqa %xmm4,B(28)
+	movdqa P(29),%xmm4
+	movdqa %xmm4,B(29)
+	movdqa P(30),%xmm4
+	movdqa %xmm4,B(30)
+	movdqa P(31),%xmm4
+	movdqa %xmm4,B(31)
+	movdqa P(32),%xmm4
+	movdqa %xmm4,B(32)
+	movdqa P(33),%xmm4
+	movdqa %xmm4,B(33)
+	movdqa P(34),%xmm4
+	movdqa %xmm4,B(34)
+	movdqa P(35),%xmm4
+	movdqa %xmm4,B(35)
+	movdqa P(36),%xmm4
+	movdqa %xmm4,B(36)
+	movdqa P(37),%xmm4
+	movdqa %xmm4,B(37)
+	movdqa P(38),%xmm4
+	movdqa %xmm4,B(38)
+	movdqa P(39),%xmm4
+	movdqa %xmm4,B(39)
+	movdqa P(40),%xmm4
+	movdqa %xmm4,B(40)
+	movdqa P(41),%xmm4
+	movdqa %xmm4,B(41)
+	movdqa P(42),%xmm4
+	movdqa %xmm4,B(42)
+	movdqa P(43),%xmm4
+	movdqa %xmm4,B(43)
+	movdqa P(44),%xmm4
+	movdqa %xmm4,B(44)
+	movdqa P(45),%xmm4
+	movdqa %xmm4,B(45)
+	movdqa P(46),%xmm4
+	movdqa %xmm4,B(46)
+	movdqa P(47),%xmm4
+	movdqa %xmm4,B(47)
+	movdqa P(48),%xmm4
+	movdqa %xmm4,B(48)
+	movdqa P(49),%xmm4
+	movdqa %xmm4,B(49)
+	movdqa P(50),%xmm4
+	movdqa %xmm4,B(50)
+	movdqa P(51),%xmm4
+	movdqa %xmm4,B(51)
+	movdqa P(52),%xmm4
+	movdqa %xmm4,B(52)
+	movdqa P(53),%xmm4
+	movdqa %xmm4,B(53)
+	movdqa P(54),%xmm4
+	movdqa %xmm4,B(54)
+	movdqa P(55),%xmm4
+	movdqa %xmm4,B(55)
+	movdqa P(56),%xmm4
+	movdqa %xmm4,B(56)
+	movdqa P(57),%xmm4
+	movdqa %xmm4,B(57)
+	movdqa P(58),%xmm4
+	movdqa %xmm4,B(58)
+	movdqa P(59),%xmm4
+	movdqa %xmm4,B(59)
+	movdqa P(60),%xmm4
+	movdqa %xmm4,B(60)
+	movdqa P(61),%xmm4
+	movdqa %xmm4,B(61)
+	movdqa P(62),%xmm4
+	movdqa %xmm4,B(62)
+	movdqa P(63),%xmm4
+	movdqa %xmm4,B(63)
+
 DES_bs_finalize_keys_plain_loop:
 	FINALIZE_NEXT_KEY_BITS_0_6
 	addl $nvec(7),k_ptr
+	addl $nvec(8),v_ptr
 	cmpl $DES_bs_all_K+nvec(56),k_ptr
 	jb DES_bs_finalize_keys_plain_loop
-	pxor zero,zero
 	pushl %esi
-	pcmpeqd ones,ones
 	movl $DES_bs_all_KS_p,k_ptr
+	movl $DES_bs_all_KS_v,v_ptr
+	movl $8,rounds
 DES_bs_crypt_plain_loop:
 	xor_B_KS_p(31, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5)
 	S1(B(40), B(48), B(54), B(62), a6_p)
@@ -1475,9 +1581,10 @@ DES_bs_crypt_plain_loop:
 	addl $nptr(96),k_ptr
 	S8(B(4), B(26), B(14), B(20), a6_p)
 	decl rounds
-	jnz DES_bs_crypt_LM_loop
+	jnz DES_bs_crypt_plain_loop
 	popl %esi
 	ret
+
 
 #endif
 

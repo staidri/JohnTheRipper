@@ -49,11 +49,7 @@
 
 #define FORMAT_LABEL         "mschapv2"
 #define FORMAT_NAME          "MSCHAPv2 C/R MD4 DES"
-#if DES_BS_VECTOR
-#define ALGORITHM_NAME       "DES_BS_MSCHAPv2-SSE2"
-#else
 #define ALGORITHM_NAME       "DES_BS_MSCHAPv2"
-#endif
 
 #define BENCHMARK_COMMENT    ""
 #define BENCHMARK_LENGTH     0
