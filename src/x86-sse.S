@@ -80,10 +80,7 @@
 .bss
 #endif
 
-.globl P
-DO_ALIGN(6)
-P:
-DO_SPACE(nvec(64))
+.extern P
 
 .globl DES_bs_all
 DO_ALIGN(6)
