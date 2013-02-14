@@ -31,7 +31,6 @@
 #define for_each_depth()
 #endif
 
-DES_bs_vector P[64];
 #if DES_bs_mt
 #include <omp.h>
 #include <assert.h>
@@ -41,6 +40,7 @@ int DES_bs_nt = 0;
 DES_bs_combined *DES_bs_all_p = NULL;
 #elif !DES_BS_ASM
 DES_bs_combined CC_CACHE_ALIGN DES_bs_all;
+DES_bs_vector P[64];
 #endif
 
 static unsigned char DES_LM_KP[56] = {
