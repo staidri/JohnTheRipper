@@ -47,9 +47,9 @@
 #define uchar unsigned char
 #endif
 
-#define FORMAT_LABEL         "mschapv2"
+#define FORMAT_LABEL         "mschapv2-bs"
 #define FORMAT_NAME          "MSCHAPv2 C/R MD4 DES"
-#define ALGORITHM_NAME       "DES_BS_MSCHAPv2"
+#define ALGORITHM_NAME       DES_BS_ALGORITHM_NAME " naive"
 
 #define BENCHMARK_COMMENT    ""
 #define BENCHMARK_LENGTH     0
@@ -495,7 +495,7 @@ static int get_hash_4(int index)
 	return DES_bs_get_hash_4(index);
 }
 
-struct fmt_main fmt_MSCHAPv2 = {
+struct fmt_main fmt_MSCHAPv2_bs = {
   {
     FORMAT_LABEL,
     FORMAT_NAME,
