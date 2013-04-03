@@ -33,6 +33,7 @@
 #include "params.h"
 #include "options.h"
 #include "common.h"
+#include "memdbg.h"
 
 #ifdef _OPENMP
 #include <omp.h>

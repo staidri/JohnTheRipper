@@ -32,6 +32,7 @@
 #include "options.h"
 #include "unicode.h"
 #include "johnswap.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"sapg"
 #define FORMAT_NAME			"SAP CODVN F/G (PASSCODE)"

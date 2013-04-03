@@ -45,6 +45,7 @@ extern int ftruncate(int fd, size_t length);
 #include "logger.h"
 #include "status.h"
 #include "recovery.h"
+#include "memdbg.h"
 
 char *rec_name = RECOVERY_NAME;
 #ifdef HAVE_MPI

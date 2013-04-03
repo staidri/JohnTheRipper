@@ -29,6 +29,7 @@
 #include "unicode.h"
 #include "memory.h"
 #include "johnswap.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"nt2"
 #define FORMAT_NAME			"NT MD4"

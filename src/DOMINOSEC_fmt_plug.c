@@ -23,6 +23,7 @@
 #include "misc.h"
 #include "formats.h"
 #include "common.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"dominosec"
 #define FORMAT_NAME		"Lotus Notes/Domino 6 More Secure Internet Password"

@@ -26,6 +26,7 @@
 #include "unicode.h"
 #include "options.h"
 #include "config.h"
+#include "memdbg.h"
 
 static int progress = 0;
 static int rec_rule;

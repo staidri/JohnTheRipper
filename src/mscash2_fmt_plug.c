@@ -61,6 +61,7 @@
 #include "md4.h"
 #include "sse-intrinsics.h"
 #include "loader.h"
+#include "memdbg.h"
 
 #if (!defined(SHA1_SSE_PARA) && defined(MMX_COEF))
 #undef _OPENMP

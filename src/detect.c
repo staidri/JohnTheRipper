@@ -17,6 +17,7 @@
 #define OS_FLOCK /* we also check for defined(LOCK_EX) on all uses anyway */
 
 #include <stdio.h>
+#include "memdbg.h"
 
 int main(int argc, char **argv)
 {

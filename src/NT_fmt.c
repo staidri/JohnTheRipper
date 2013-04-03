@@ -26,6 +26,7 @@
 #include "formats.h"
 #include "options.h"
 #include "unicode.h"
+#include "memdbg.h"
 
 //Init values
 #define INIT_A 0x67452301

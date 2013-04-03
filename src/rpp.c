@@ -10,6 +10,7 @@
 #include "config.h"
 #include "rpp.h"
 #include "common.h"
+#include "memdbg.h"
 
 int rpp_init(struct rpp_context *ctx, char *subsection)
 {

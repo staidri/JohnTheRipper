@@ -14,6 +14,7 @@
 #include "params.h"
 #include "memory.h"
 #include "compiler.h"
+#include "memdbg.h"
 
 #undef PRINT_INSNS
 

@@ -15,6 +15,7 @@
  * (This is a heavily cut-down "BSD license".)
  */
 #include <stdio.h>
+#include "memdbg.h"
 
 static void print_help()
 {

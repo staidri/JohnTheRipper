@@ -22,6 +22,7 @@
 #include "options.h"
 #ifdef HAVE_MPI
 #include "john-mpi.h"
+#include "memdbg.h"
 
 static unsigned long long mpi_line = 0;
 #endif

@@ -15,6 +15,7 @@
 #include "DES_std.h"
 #include "DES_bs.h"
 #include "unicode.h"
+#include "memdbg.h"
 
 #if DES_BS_VECTOR
 #define DEPTH				[depth]

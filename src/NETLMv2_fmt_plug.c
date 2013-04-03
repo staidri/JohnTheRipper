@@ -52,6 +52,7 @@
 
 #include "md5.h"
 #include "hmacmd5.h"
+#include "memdbg.h"
 
 #ifndef uchar
 #define uchar unsigned char

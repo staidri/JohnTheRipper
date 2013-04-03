@@ -28,6 +28,7 @@
 #include <omp.h>
 #define OMP_SCALE               64
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"lastpass"
 #define FORMAT_NAME		"LastPass sniffed sessions PBKDF2-HMAC-SHA-256 AES"

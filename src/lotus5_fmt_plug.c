@@ -8,6 +8,7 @@
 #include "misc.h"
 #include "formats.h"
 #include "common.h"
+#include "memdbg.h"
 
 /*preprocessor constants that John The Ripper likes*/
 #define FORMAT_LABEL                   "lotus5"

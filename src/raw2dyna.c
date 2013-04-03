@@ -12,6 +12,7 @@
 #else
 #include <unistd.h>
 #endif
+#include "memdbg.h"
 
 int dyna_num=12;
 int hash_len=32;

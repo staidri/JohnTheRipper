@@ -79,6 +79,7 @@ ahead of time.
 #if OPENSSL_VERSION_NUMBER >= 0x10000000
 #include "openssl/whrlpool.h"
 #endif
+#include "memdbg.h"
 
 #define STRINGIZE2(s) #s
 #define STRINGIZE(s) STRINGIZE2(s)

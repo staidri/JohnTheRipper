@@ -31,6 +31,7 @@
 #include "params.h"
 #include "common.h"
 #include "formats.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL        "hmailserver"
 #define FORMAT_NAME         "hMailServer salted SHA-256"

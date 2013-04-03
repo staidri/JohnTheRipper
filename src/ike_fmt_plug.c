@@ -61,6 +61,7 @@
 #define OMP_SCALE               16
 static int omp_t = 1;
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"ike"
 #define FORMAT_NAME		"IKE PSK HMAC-MD5 / HMAC-SHA1"

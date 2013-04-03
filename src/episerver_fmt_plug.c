@@ -50,6 +50,7 @@
 #include <omp.h>
 #define OMP_SCALE               4
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"episerver"
 #define FORMAT_NAME		"EPiServer salted SHA-1/SHA-256"

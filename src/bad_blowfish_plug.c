@@ -23,6 +23,7 @@
 #include "arch.h"
 
 #include "bad_blowfish.h"
+#include "memdbg.h"
 
 #define true 		1
 #define false 		0

@@ -10,6 +10,7 @@
 #include "params.h"
 #include "memory.h"
 #include "mkvlib.h"
+#include "memdbg.h"
 
 static void show_pwd_rnbs(struct s_pwd * pwd)
 {

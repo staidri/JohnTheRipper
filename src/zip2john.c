@@ -68,6 +68,7 @@
 #include "misc.h"
 #include "formats.h"
 #include "stdint.h"
+#include "memdbg.h"
 
 static int ascii_mode=0, checksum_only=0, use_magic=1;
 static char *ascii_fname;

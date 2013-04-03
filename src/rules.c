@@ -23,6 +23,7 @@
 #include "rpp.h"
 #include "rules.h"
 #include "options.h"
+#include "memdbg.h"
 
 char *rules_errors[] = {
 	NULL,	/* No error */

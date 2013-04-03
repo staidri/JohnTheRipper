@@ -58,6 +58,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif /* _OPENMP */
+#include "memdbg.h"
 
 long clk_tck = 0;
 

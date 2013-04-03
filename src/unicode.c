@@ -83,6 +83,7 @@
 #include "misc.h"
 #include "config.h"
 #include "md4.h"
+#include "memdbg.h"
 
 #if !defined(uint16) && !defined(HAVE_UINT16_FROM_RPC_RPC_H)
 #if (SIZEOF_SHORT == 4)

@@ -19,6 +19,7 @@
 #ifdef HAVE_MPI
 #include "john-mpi.h"
 #endif
+#include "memdbg.h"
 
 #ifdef SHA1_SSE_PARA
 #define NBKEYS	(MMX_COEF * SHA1_SSE_PARA)

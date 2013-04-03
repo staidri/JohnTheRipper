@@ -67,6 +67,7 @@
 #else
 #include "john_build_rule.h"
 #endif
+#include "memdbg.h"
 
 #ifdef HAVE_MPI
 #ifdef _OPENMP
@@ -1003,6 +1004,8 @@ int main(int argc, char **argv)
 #ifdef _MSC_VER
 	_CrtDumpMemoryLeaks();
 #endif
+	if (Mem_Used() > 0)
+		Mem_Display(stdout);
 
 	return exit_status;
 }

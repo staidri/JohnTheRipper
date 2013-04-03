@@ -13,6 +13,7 @@
 #include "single.h"
 #include "wordlist.h"
 #include "inc.h"
+#include "memdbg.h"
 
 static void do_single_pass(struct db_main *db)
 {

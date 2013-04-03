@@ -13,6 +13,7 @@
 #include <unistd.h>
 #endif
 
+#include "memdbg.h"
 
 #define USERFILE_HEADER "#4v:"
 #define USERNAME_LENGTH 11

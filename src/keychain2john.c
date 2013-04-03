@@ -43,6 +43,7 @@
 #include <string.h>
 #include <assert.h>
 #include "stdint.h"
+#include "memdbg.h"
 
 #define SALTLEN 20
 #define IVLEN 8

@@ -18,6 +18,7 @@
 #include "md5.h"
 #include "common.h"
 #include "formats.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"ipb2"
 #define FORMAT_NAME			"Invision Power Board 2.x salted MD5"

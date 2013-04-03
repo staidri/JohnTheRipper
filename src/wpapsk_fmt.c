@@ -20,6 +20,7 @@
 //#define WPAPSK_DEBUG
 #include "wpapsk.h"
 #include "sha.h"
+#include "memdbg.h"
 
 // if this is uncommented, we will force building of SSE to be 'off'. It is
 // useful in testing but 99.9% of the builds should have this undef commented out.

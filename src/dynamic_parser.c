@@ -73,6 +73,7 @@
 
 #define DEFINE_MD5_PREDICATE_POINTERS
 #include "dynamic.h"
+#include "memdbg.h"
 
 typedef struct Dynamic_Predicate_t
 {

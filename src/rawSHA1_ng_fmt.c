@@ -21,6 +21,7 @@
 #include "formats.h"
 #include "memory.h"
 #include "sha.h"
+#include "memdbg.h"
 
 //
 // Alternative SSE2 optimised raw SHA-1 implementation for John The Ripper.

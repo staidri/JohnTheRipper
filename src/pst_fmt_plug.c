@@ -21,6 +21,7 @@
 #define OMP_SCALE               8
 static int omp_t = 1;
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"pst"
 #define FORMAT_NAME			"PST custom CRC-32"

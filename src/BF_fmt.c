@@ -11,6 +11,7 @@
 #include "BF_std.h"
 #include "common.h"
 #include "formats.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"bf"
 #define FORMAT_NAME			"OpenBSD Blowfish"

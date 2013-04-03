@@ -10,6 +10,7 @@
 #include "DES_std.h"
 #include "common.h"
 #include "formats.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"trip"
 #define FORMAT_NAME			"Tripcode DES"

@@ -13,6 +13,7 @@
 #ifdef HAVE_MPI
 #include "john-mpi.h"
 #endif
+#include "memdbg.h"
 
 static char *opt_errors[] = {
 	NULL,	/* No error */

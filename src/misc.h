@@ -13,8 +13,19 @@
 #define _JOHN_MISC_H
 
 #include <stdio.h>
+#ifndef _MSC_VER
 #include <strings.h>
+#else
+#undef inline
+#define inline static
+#endif
 #include <string.h>
+
+#ifndef __MEM_DBG_H_
+#define __MEM_DBG_H_
+#include "memdbg.h"
+#undef __MEM_DBG_H_
+#endif
 
 /*
  * Exit on error. Logs the event, closes john.pot and the log file, and
@@ -168,11 +179,14 @@ extern char *strupr(char *s);
 #define bzero(a,b) memset(a,0,b)
 #define strlwr _strlwr
 #define strupr _strupr
+#ifndef MEMDBG_ON
 #define strdup _strdup
+#endif
 #define strncasecmp _strnicmp
 #define strcasecmp _stricmp
 #define alloca _alloca
 #pragma warning (disable : 4018 297 )
+#undef inline
 #define inline _inline
 #endif
 

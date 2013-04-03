@@ -10,6 +10,7 @@
 #include "arch.h"
 #include "common.h"
 #include "DES_bs.h"
+#include "memdbg.h"
 
 
 #if DES_BS_ASM && defined(_OPENMP) && defined(__GNUC__)

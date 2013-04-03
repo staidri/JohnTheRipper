@@ -13,6 +13,7 @@
 #include "memory.h"
 #include "common.h"
 #include "johnswap.h"
+#include "memdbg.h"
 
 unsigned int mem_saving_level = 0;
 
@@ -45,13 +46,21 @@ void cleanup_tiny_memory()
 	}
 }
 
-void *mem_alloc(size_t size)
+void *mem_alloc_func(size_t size
+#if defined (MEMDBG_ON)
+	, char *file, int line
+#endif
+	)
 {
 	void *res;
 
 	if (!size) return NULL;
-
-	if (!(res = malloc(size))) {
+#if defined (MEMDBG_ON)
+	res = (char*) MEMDBG_alloc(size, file, line);
+#else
+	res = malloc(size);
+#endif
+	if (!res) {
 		fprintf(stderr, "mem_alloc(): %s trying to allocate %zd bytes\n", strerror(ENOMEM), size);
 		error();
 	}
@@ -59,9 +68,17 @@ void *mem_alloc(size_t size)
 	return res;
 }
 
-void *mem_calloc(size_t size)
+void *mem_calloc_func(size_t size
+#if defined (MEMDBG_ON)
+	, char *file, int line
+#endif
+	)
 {
+#if defined (MEMDBG_ON)
+	char *res = (char*) MEMDBG_alloc(size, file, line);
+#else
 	char *res = (char*) mem_alloc(size);
+#endif
 	memset(res, 0, size);
 	return res;
 }

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "wpapcap2john.h"
+#include "memdbg.h"
 
 int GetNextPacket(FILE *in);
 int ProcessPacket();

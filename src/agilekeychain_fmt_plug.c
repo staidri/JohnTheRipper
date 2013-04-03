@@ -26,6 +26,7 @@
 #include <omp.h>
 #define OMP_SCALE               64
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"agilekeychain"
 #define FORMAT_NAME		"1Password Agile Keychain PBKDF2-HMAC-SHA-1 AES"

@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include "memory.h"
 #include "options.h"
+#include "memdbg.h"
 
 void build_fake_salts_for_regen_lost(struct db_salt *salts) {
 	if (options.regen_lost_salts == 1)  // this is for PHPS, with a raw 32 byte hash input file (i.e. missing the salts)

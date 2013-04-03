@@ -40,6 +40,7 @@
 #include <omp.h>
 #define OMP_SCALE               1
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"wbb3"
 #define FORMAT_NAME		"WoltLab BB3 salted SHA-1"

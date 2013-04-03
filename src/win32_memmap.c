@@ -3,6 +3,7 @@
 #include "win32_memmap.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "memdbg.h"
 
 //#pragma comment(lib, "user32.lib")
 

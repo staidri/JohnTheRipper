@@ -22,6 +22,7 @@
 #include <omp.h>
 #define OMP_SCALE               32
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"strip"
 #define FORMAT_NAME		"STRIP Password Manager PBKDF2-SHA1"

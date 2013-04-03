@@ -45,6 +45,7 @@
 #define OMP_SCALE               32
 static int omp_t = 1;
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"django"
 #define FORMAT_NAME		"Django PBKDF2-HMAC-SHA-256"

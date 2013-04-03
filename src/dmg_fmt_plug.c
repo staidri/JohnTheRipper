@@ -49,6 +49,7 @@
 #include <omp.h>
 #define OMP_SCALE               64
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL        "dmg"
 #define FORMAT_NAME         "Apple DMG PBKDF2-HMAC-SHA-1 3DES / AES"

@@ -11,6 +11,7 @@
 #include "common.h"
 #include "formats.h"
 #include "johnswap.h"
+#include "memdbg.h"
 
 #ifdef _OPENMP
 #define OMP_SCALE			2048

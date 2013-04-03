@@ -31,6 +31,7 @@
 #include "formats.h"
 #include "md5.h"
 #include "dynamic.h"
+#include "memdbg.h"
 
 #ifdef MD5_SSE_PARA
 #undef MMX_COEF

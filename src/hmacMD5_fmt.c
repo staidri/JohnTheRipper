@@ -23,6 +23,7 @@
 #define MD5_N				MMX_COEF
 #endif
 #include "sse-intrinsics.h"
+#include "memdbg.h"
 
 #define ALGORITHM_NAME			MD5_ALGORITHM_NAME
 

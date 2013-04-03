@@ -33,6 +33,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"crc32"
 #define FORMAT_NAME			"CRC-32"

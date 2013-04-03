@@ -23,6 +23,7 @@
 #include "sha2.h"
 #include "johnswap.h"
 #include "stdint.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"pbkdf2-hmac-sha512"
 #define FORMAT_TAG		"$pbkdf2-hmac-sha512$"

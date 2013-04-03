@@ -21,6 +21,7 @@
 #include "misc.h"
 #include "common.h"
 #include "formats.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"drupal7"
 #define FORMAT_NAME			"Drupal 7 $S$ SHA-512"

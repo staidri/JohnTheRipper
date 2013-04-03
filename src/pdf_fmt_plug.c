@@ -23,6 +23,7 @@
 #include <omp.h>
 #define OMP_SCALE               64
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL        "pdf"
 #define FORMAT_NAME         "PDF MD5 SHA-2 RC4 / AES"

@@ -24,6 +24,7 @@
 #endif
 
 #include "times.h"
+#include "memdbg.h"
 
 #if defined(__GNUC__) && defined(__i386__)
 #include "arch.h" /* for CPU_REQ */

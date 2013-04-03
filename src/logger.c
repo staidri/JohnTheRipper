@@ -42,6 +42,7 @@
 #ifdef HAVE_MPI
 #include "john-mpi.h"
 #endif
+#include "memdbg.h"
 
 static int cfg_beep;
 static int cfg_log_passwords;

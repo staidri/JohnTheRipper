@@ -13,6 +13,7 @@
 #include "misc.h"
 #include "common.h"
 #include "formats.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"raw-sha"
 #define FORMAT_NAME			"Raw SHA-0"

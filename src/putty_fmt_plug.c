@@ -25,6 +25,7 @@
 #include <omp.h>
 #define OMP_SCALE           64
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL        "putty"
 #define FORMAT_NAME         "PuTTY Private Key SHA-1 / AES"

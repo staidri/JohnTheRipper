@@ -27,6 +27,7 @@
 #include "options.h"
 #include "loader.h"
 #include "johnswap.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"mscash"
 #define FORMAT_NAME			"M$ Cache Hash MD4"

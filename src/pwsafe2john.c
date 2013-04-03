@@ -21,6 +21,7 @@
 #include <string.h>
 #include <assert.h>
 #include "stdint.h"
+#include "memdbg.h"
 
 static char *magic = "PWS3";
 

@@ -17,6 +17,7 @@
 #ifndef _uaf_hash_
 #define _uaf_hash_
 #include "uaf_encode_plug.c"
+#include "memdbg.h"
 
 /***************************************************************************/
 /*

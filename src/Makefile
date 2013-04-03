@@ -153,7 +153,7 @@ JOHN_OBJS = \
 	unshadow.o \
 	unafs.o \
 	undrop.o \
-	unique.o putty2john.o
+	unique.o putty2john.o memdbg.o
 
 OCL_OBJS = \
 	common-opencl.o common_opencl_pbkdf2.o opencl_mysqlsha1_fmt.o \
@@ -223,7 +223,7 @@ BENCH_PARA_DEPEND = \
 	sse-intrinsics.o rawMD4_fmt_plug.o rawMD5_fmt_plug.o rawSHA1_fmt_plug.o MD5_fmt.o MD5_std.o
 
 GENMKVPWD_OBJS = \
-	genmkvpwd.o mkvlib.o memory.o miscnl.o path.o
+	genmkvpwd.o mkvlib.o memory.o miscnl.o path.o memdbg.o
 
 PROJ = ../run/john ../run/unshadow ../run/unafs ../run/unique ../run/undrop \
 	../run/ssh2john ../run/rar2john ../run/zip2john \
@@ -2141,25 +2141,25 @@ endif
 	$(LD) $(GENMKVPWD_OBJS) $(LDFLAGS_MKV) -o ../run/genmkvpwd.exe
 
 ../run/mkvcalcproba: mkvcalcproba.o
-	$(LD) mkvcalcproba.o $(LDFLAGS) -o ../run/mkvcalcproba
+	$(LD) mkvcalcproba.o memdbg.o $(LDFLAGS) -o ../run/mkvcalcproba
 
 ../run/mkvcalcproba.exe: mkvcalcproba.o
-	$(LD) mkvcalcproba.o $(LDFLAGS_MKV) -o ../run/mkvcalcproba.exe
+	$(LD) mkvcalcproba.o memdbg.o $(LDFLAGS_MKV) -o ../run/mkvcalcproba.exe
 
 ../run/calc_stat: calc_stat.o
-	$(LD) calc_stat.o $(LDFLAGS) -o ../run/calc_stat
+	$(LD) calc_stat.o memdbg.o $(LDFLAGS) -o ../run/calc_stat
 
 ../run/calc_stat.exe: calc_stat.o
-	$(LD) calc_stat.o $(LDFLAGS_MKV) -o ../run/calc_stat.exe
+	$(LD) calc_stat.o memdbg.o $(LDFLAGS_MKV) -o ../run/calc_stat.exe
 
 ../run/raw2dyna: raw2dyna.o
-	$(LD) raw2dyna.o $(LDFLAGS) -o ../run/raw2dyna
+	$(LD) raw2dyna.o memdbg.o $(LDFLAGS) -o ../run/raw2dyna
 
 ../run/raw2dyna.exe: raw2dyna.o
-	$(LD) raw2dyna.o $(LDFLAGS) -o ../run/raw2dyna.exe
+	$(LD) raw2dyna.o memdbg.o $(LDFLAGS) -o ../run/raw2dyna.exe
 
 ../run/SIPdump: SIPdump.o
-	$(LD) SIPdump.o $(LDFLAGS) -lpcap -o ../run/SIPdump
+	$(LD) SIPdump.o memdbg.o $(LDFLAGS) -lpcap -o ../run/SIPdump
 
 ../run/vncpcap2john:
 	$(CXX) -Wall vncpcap2john.cpp -lpcap -o ../run/vncpcap2john
@@ -2168,19 +2168,19 @@ endif
 	$(CXX) -Wall gpg2john.cpp -lcrypto -o ../run/gpg2john
 
 ../run/truecrypt_volume2john: truecrypt_volume2john.o
-	$(LD) $(LDFLAGS) truecrypt_volume2john.o -lcrypto -o ../run/truecrypt_volume2john
+	$(LD) $(LDFLAGS) truecrypt_volume2john.o memdbg.o -lcrypto -o ../run/truecrypt_volume2john
 
 ../run/uaf2john: uaf2john.o uaf_encode_plug.o
-	$(LD) $(LDFLAGS) uaf2john.o uaf_encode_plug.o -o ../run/uaf2john
+	$(LD) $(LDFLAGS) uaf2john.o uaf_encode_plug.o memdbg.o -o ../run/uaf2john
 
 ../run/wpapcap2john: wpapcap2john.o
-	$(LD) $(LDFLAGS) wpapcap2john.o -o ../run/wpapcap2john
+	$(LD) $(LDFLAGS) wpapcap2john.o -o memdbg.o ../run/wpapcap2john
 
 ../run/keystore2john: keystore2john.o
-	$(LD) $(LDFLAGS) keystore2john.o -o ../run/keystore2john
+	$(LD) $(LDFLAGS) keystore2john.o memdbg.o -o ../run/keystore2john
 
 ../run/tgtsnarf: tgtsnarf.o
-	$(LD) tgtsnarf.o $(LDFLAGS) -o ../run/tgtsnarf
+	$(LD) tgtsnarf.o memdbg.o $(LDFLAGS) -o ../run/tgtsnarf
 
 # Inlining the S-boxes produces faster code as long as they fit in the cache.
 DES_bs_b.o: DES_bs_b.c sboxes.c nonstd.c sboxes-s.c

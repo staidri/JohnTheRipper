@@ -22,6 +22,7 @@
 #include "common.h"
 #include "formats.h"
 #include "params.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"raw-md4"
 #define FORMAT_NAME			"Raw MD4"

@@ -31,6 +31,7 @@
 #include "sha.h"
 #include "johnswap.h"
 #include "loader.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"raw-sha1-linkedin"
 #define FORMAT_NAME			"Raw SHA-1 LinkedIn"

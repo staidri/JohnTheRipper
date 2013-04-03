@@ -15,6 +15,7 @@
 #include "memory.h"
 #include "md5.h"
 #include "MD5_std.h"
+#include "memdbg.h"
 
 #ifndef __XOP__
 #define _mm_slli_epi32a(a, s) \

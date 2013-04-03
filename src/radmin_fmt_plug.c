@@ -22,6 +22,7 @@
 #include <omp.h>
 #define OMP_SCALE               1
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"radmin"
 #define FORMAT_NAME		"RAdmin v2.x MD5"

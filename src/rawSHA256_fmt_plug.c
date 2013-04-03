@@ -10,6 +10,7 @@
 #include "params.h"
 #include "common.h"
 #include "formats.h"
+#include "memdbg.h"
 
 #ifdef _OPENMP
 #define OMP_SCALE			2048

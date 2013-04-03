@@ -18,6 +18,7 @@
 #define OMP_SCALE			2048
 #include <omp.h>
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"raw-blake2"
 #define FORMAT_NAME			"BLAKE2b 512"

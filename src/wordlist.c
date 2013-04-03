@@ -42,6 +42,7 @@
 
 #ifdef HAVE_MPI
 #include "john-mpi.h"
+#include "memdbg.h"
 
 static int distributeWords, distributeRules, myrulecount;
 #endif

@@ -55,6 +55,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include "memdbg.h"
 
 #define N 819200
 

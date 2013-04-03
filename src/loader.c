@@ -33,6 +33,7 @@
 #endif
 #include "unicode.h"
 #include "dynamic.h"
+#include "memdbg.h"
 
 #ifdef HAVE_CRYPT
 extern struct fmt_main fmt_crypt;

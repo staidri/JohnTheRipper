@@ -74,6 +74,7 @@
 #include "johnswap.h"
 #include "unrar.h"
 #include "config.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"rar"
 #define FORMAT_NAME		"RAR3 SHA-1 AES"

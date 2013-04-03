@@ -49,6 +49,7 @@
 #include "memory.h"
 
 #include "sha.h"
+#include "memdbg.h"
 
 #ifndef uchar
 #define uchar unsigned char

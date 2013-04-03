@@ -50,6 +50,7 @@
 #include "options.h"
 #include "bench.h"
 #include "status.h"
+#include "memdbg.h"
 
 volatile int event_pending = 0;
 volatile int event_abort = 0, event_save = 0, event_status = 0;

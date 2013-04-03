@@ -14,6 +14,7 @@
 #include "params.h"
 #include "common.h"
 #include "formats.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"raw-sha224"
 #define FORMAT_NAME			"Raw SHA-224"

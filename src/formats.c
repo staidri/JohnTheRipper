@@ -17,6 +17,7 @@
 #else
 #include "loader.h"
 #endif
+#include "memdbg.h"
 
 /* this is just for advance_cursor() */
 #ifdef HAVE_OPENCL

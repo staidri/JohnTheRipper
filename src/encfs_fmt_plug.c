@@ -28,6 +28,7 @@
 #include "formats.h"
 #include "params.h"
 #include "misc.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL        "encfs"
 #define FORMAT_NAME         "EncFS PBKDF2 AES / Blowfish"

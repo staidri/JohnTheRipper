@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "misc.h"
+#include "memdbg.h"
 
 #define DB_ENTRY_SIZE			200
 

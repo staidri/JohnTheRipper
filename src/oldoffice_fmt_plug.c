@@ -27,6 +27,7 @@
 #include <omp.h>
 #define OMP_SCALE               64
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"oldoffice"
 #define FORMAT_NAME		"Office <= 2003 MD5/SHA-1, RC4"

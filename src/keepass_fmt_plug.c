@@ -24,6 +24,7 @@
 #include <omp.h>
 #define OMP_SCALE               16
 #endif
+#include "memdbg.h"
 
 #ifdef _MSC_VER
 #define atoll (unsigned long long)_atoi64

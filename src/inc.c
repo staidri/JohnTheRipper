@@ -24,6 +24,7 @@
 #include "external.h"
 #include "cracker.h"
 #include "options.h"
+#include "memdbg.h"
 
 extern struct fmt_main fmt_LM;
 extern struct fmt_main fmt_NETLM;

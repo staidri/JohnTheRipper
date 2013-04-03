@@ -18,6 +18,7 @@
 #include <errno.h>
 #include <assert.h>
 #include "common.h"
+#include "memdbg.h"
 
 #define HCCAP_SIZE		392
 typedef struct

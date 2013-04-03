@@ -20,6 +20,7 @@ static int omp_t = 1;
 
 #define FORMAT_LABEL			"hmac-sha512"
 #define FORMAT_NAME			"HMAC SHA-512"
+#include "memdbg.h"
 
 #if ARCH_BITS >= 64
 #define ALGORITHM_NAME			"64/" ARCH_BITS_STR " " SHA2_LIB

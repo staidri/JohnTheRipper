@@ -31,6 +31,7 @@
 #define OMP_SCALE               64
 static int omp_t = 1;
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"racf"
 #define FORMAT_NAME		"RACF DES"

@@ -26,6 +26,7 @@
 #include "unicode.h"
 #include "memory.h"
 #include "johnswap.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"raw-md5u"
 #define FORMAT_NAME			"md5(unicode($p))"

@@ -9,6 +9,7 @@
 #include "params.h"
 #include "memory.h"
 #include "path.h"
+#include "memdbg.h"
 
 static char *john_home_path = NULL;
 static int john_home_length;

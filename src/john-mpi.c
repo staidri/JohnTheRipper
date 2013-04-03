@@ -6,6 +6,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+#include "memdbg.h"
 
 int mpi_p, mpi_id;
 char mpi_name[MPI_MAX_PROCESSOR_NAME + 1];

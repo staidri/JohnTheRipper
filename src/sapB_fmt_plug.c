@@ -22,6 +22,7 @@
 #include "formats.h"
 #include "options.h"
 #include "md5.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"sapb"
 #define FORMAT_NAME			"SAP CODVN B (BCODE)"

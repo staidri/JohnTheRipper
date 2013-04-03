@@ -14,6 +14,7 @@
 #include "formats.h"
 #include "sha.h"
 #include "johnswap.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"hmac-sha1"
 #define FORMAT_NAME			"HMAC SHA-1"

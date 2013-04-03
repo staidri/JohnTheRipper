@@ -24,6 +24,7 @@ static int omp_t = 1;
 #include <omp.h>
 #define OMP_SCALE               1
 #endif
+#include "memdbg.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf

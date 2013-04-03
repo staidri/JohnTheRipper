@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <string.h>
 #include "stdint.h"
+#include "memdbg.h"
 
 
 #define KWMAGIC 			"KWALLET\n\r\0\r\n"

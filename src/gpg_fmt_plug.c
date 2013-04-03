@@ -43,6 +43,7 @@
 #include "sha.h"
 #include "sha2.h"
 #include "stdint.h"
+#include "memdbg.h"
 
 #ifdef _MSC_VER
 typedef int int32_t;

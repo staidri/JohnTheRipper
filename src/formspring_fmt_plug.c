@@ -23,6 +23,7 @@
 #include "formats.h"
 #include "dynamic.h"
 #include "options.h"
+#include "memdbg.h"
 
 #define FORMAT_LABEL		"formspring"
 #define FORMAT_NAME		"FormSpring sha256($salt.$pass)"

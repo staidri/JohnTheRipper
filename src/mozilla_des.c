@@ -39,6 +39,7 @@
 #include "mozilla_des.h"
 #include <stddef.h>
 #include <stdio.h>
+#include "memdbg.h"
 
 //#define USE_INDEXING 1
 

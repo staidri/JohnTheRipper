@@ -38,6 +38,7 @@
 #include <string.h>
 //#include <memory.h>
 #include "gladman_hmac.h"
+#include "memdbg.h"
 
 #if defined(__cplusplus)
 extern "C"

@@ -28,6 +28,7 @@
 #endif
 #include "sse-intrinsics.h"
 #define ALGORITHM_NAME			MD5_ALGORITHM_NAME
+#include "memdbg.h"
 
 #define BENCHMARK_COMMENT		""
 #define BENCHMARK_LENGTH		-1

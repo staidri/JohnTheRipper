@@ -15,6 +15,7 @@
 #define OMP_SCALE			2048
 #include <omp.h>
 #endif
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"raw-sha384"
 #define FORMAT_NAME			"Raw SHA-384"

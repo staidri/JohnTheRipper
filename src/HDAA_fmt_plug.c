@@ -35,6 +35,7 @@
 #endif
 #include "sse-intrinsics.h"
 #define ALGORITHM_NAME			MD5_ALGORITHM_NAME
+#include "memdbg.h"
 
 #define FORMAT_LABEL			"hdaa"
 #define FORMAT_NAME			"HTTP Digest access authentication MD5"

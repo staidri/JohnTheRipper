@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include "params.h"
 #include "memory.h"
+#include "memdbg.h"
 
 // KeePass 1.x signature
 uint32_t FileSignatureOld1 = 0x9AA2D903;

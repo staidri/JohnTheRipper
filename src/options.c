@@ -42,6 +42,7 @@
 #ifdef HAVE_OPENCL
 #include "common-opencl.h"
 #endif
+#include "memdbg.h"
 
 struct options_main options;
 static char *field_sep_char_string;
