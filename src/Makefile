@@ -2174,7 +2174,7 @@ endif
 	$(LD) $(LDFLAGS) uaf2john.o uaf_encode_plug.o memdbg.o -o ../run/uaf2john
 
 ../run/wpapcap2john: wpapcap2john.o
-	$(LD) $(LDFLAGS) wpapcap2john.o -o memdbg.o ../run/wpapcap2john
+	$(LD) $(LDFLAGS) wpapcap2john.o memdbg.o -o ../run/wpapcap2john
 
 ../run/keystore2john: keystore2john.o
 	$(LD) $(LDFLAGS) keystore2john.o memdbg.o -o ../run/keystore2john
